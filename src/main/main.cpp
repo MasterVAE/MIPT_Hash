@@ -8,7 +8,8 @@
 
 static const size_t TABLE_SIZE = 4153;
 static const char* const INPUT_FILENAME = "sources/file.fl";
-static const char* const STAT_FILENAME = "sources/stats_CRC_32";
+static const char* const STAT_FILENAME = "sources/stats_crc_32";
+static size_t (*HASH_FUNC)(size_t hash_count, const char* word) = HashCRC_32;
 
 size_t FileLen(FILE* file);
 size_t WordCount(const char* buffer);
@@ -20,7 +21,7 @@ int main()
 {   
     printf("Hash table starting...\n");
 
-    HashTable* table = HashTableCreate(TABLE_SIZE, HashCRC_32);
+    HashTable* table = HashTableCreate(TABLE_SIZE, HASH_FUNC);
     if(!table)
     {
         printf("Failied to create hash table\n");
@@ -95,7 +96,7 @@ char* CreateBufferFromFile(const char* filename)
 {
     assert(filename);
 
-    FILE* file = fopen(INPUT_FILENAME, "rb");
+    FILE* file = fopen(filename, "rb");
     if(!file)
     {
         return NULL;

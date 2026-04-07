@@ -6,6 +6,8 @@
 
 HashTable* HashTableCreate(size_t size, size_t (*HashFunc)(size_t hash_count, const char* word))
 {
+    assert(HashFunc);
+
     HashTable* table = (HashTable*)calloc(1, sizeof(HashTable));
     if(!table) return NULL;
 
@@ -35,7 +37,7 @@ void HashTableDestroy(HashTable* table)
 
     for(size_t i = 0; i < table->size; i++)
     {
-        ListDestroy(&table->table[i]);
+        ListClear(&table->table[i]);
     }
     free(table->table);
     free(table);

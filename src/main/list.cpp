@@ -41,6 +41,20 @@ void ListDestroy(List* list)
     free(list);
 }
 
+void ListClear(List* list)
+{
+    if(!list) return;
+
+    ListElem* next = list->start;
+    while(next)
+    {
+        ListElem* curr = next;
+        next = next->next;
+
+        free(curr);
+    }
+}
+
 void ListAddElem(List* list, const char* string)
 {
     assert(list);
@@ -56,6 +70,7 @@ void ListAddElem(List* list, const char* string)
     if(!list->start)
     {
         list->start = elem;
+        list->count++;
         return;
     }
     ListElem* curr = list->start;
@@ -70,7 +85,7 @@ void ListAddElem(List* list, const char* string)
         prev = curr;
         curr = curr->next;
     }
-    
+
     list->count++;
     prev->next = elem;
 }

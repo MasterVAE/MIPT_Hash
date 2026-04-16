@@ -6,7 +6,7 @@ FILES_DIR = files
 
 .DEFAULT_GOAL := all
 
-TARGET ?= DEBUG
+TARGET ?= RELEASE
 
 CC = g++
 DEBUG_FLAGS = -D \
@@ -75,7 +75,7 @@ CFLAGS = -std=c++17 -Wall \
                 -fPIE \
                 -Werror=vla \
 
-RELEASE_FLAGS = -O3 -march=native -g -D NDEBUG -flto
+RELEASE_FLAGS = -O2 -march=native -g -D NDEBUG
 
 
 ifeq ($(TARGET), DEBUG)
@@ -104,5 +104,5 @@ $(OBJ_DIR) $(TARGET_DIR) $(FILES_DIR):
 
 $(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.cpp | $(OBJ_DIR)
 	@mkdir -p $(dir $@) 
-	@$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
+	@$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c $< -o $@ -mavx2
 	@echo "COMPILED $<"%

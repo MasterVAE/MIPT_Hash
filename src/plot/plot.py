@@ -25,4 +25,4 @@ def plot_data_from_file(filename, output_filename="graph.png"):
     plt.savefig(output_filename, dpi=300, bbox_inches='tight')
 
 
-plot_data_from_file("sources/stats_zero", "sources/plot_zero.png")
+plot_data_from_file("sources/stats_summ_4153", "sources/plot_summ_4153.png")

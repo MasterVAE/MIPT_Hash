@@ -6,7 +6,8 @@
 struct ListElem
 {
     ListElem* next;
-    const char* word;
+    char* word;
+    size_t count;
 };
 
 struct List
@@ -19,6 +20,6 @@ List* ListCreate();
 void ListInit(List* list);
 void ListDestroy(List* list);
 void ListClear(List* list);
-void ListAddElem(List* list, const char* string);
+void ListAddElem(List* list, char* string);
 
 #endif // LIST_H

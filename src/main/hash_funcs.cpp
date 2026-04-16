@@ -3,6 +3,7 @@
 
 #include "hash_funcs.h"
 
+
 size_t HashZero(size_t hash_count, const char* word)
 {
     assert(word);
@@ -53,18 +54,20 @@ size_t HashRoll(size_t hash_count, const char* word)
     return value%hash_count;
 
 }
+
 size_t HashCRC_32(size_t hash_count, const char* word)
 {
     assert(word);
 
     size_t value = 5381;
 
-    size_t len = strlen(word);
-    for(size_t i = 0; i < len; i++)
+    for(size_t i = 0; word[i] != '\0'; i++)
     {
-        value ^= word[i];
-        value = (value << 1) | (value >> (sizeof(size_t) * 8 - 1));
+        value ^= (size_t)word[i];
+        value = (value << 1) | (value & ((size_t)1 << (sizeof(value) * 8 - 1)));
     }
 
     return value%hash_count;
 }
+
+// заменить ассемблерной функцией

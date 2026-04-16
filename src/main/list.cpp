@@ -50,12 +50,12 @@ void ListClear(List* list)
     {
         ListElem* curr = next;
         next = next->next;
-
+        free(curr->word);
         free(curr);
     }
 }
 
-void ListAddElem(List* list, const char* string)
+void ListAddElem(List* list, char* string)
 {
     assert(list);
     assert(string);
@@ -65,6 +65,7 @@ void ListAddElem(List* list, const char* string)
 
     elem->word = string;
     elem->next = NULL;
+    elem->count = 1;
 
 
     if(!list->start)
@@ -79,7 +80,9 @@ void ListAddElem(List* list, const char* string)
     {
         if(!strcmp(curr->word, string))
         {
+            free(elem->word);
             free(elem);
+            curr->count++;
             return;
         }
         prev = curr;

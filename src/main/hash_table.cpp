@@ -6,6 +6,13 @@
 #include <immintrin.h>
 
 #include "hash_table.h"
+#include "hash_funcs.h"
+
+
+#include "optimizations.h"
+
+
+extern "C" size_t Hash_ASM(size_t hash_count, const char* word);
 
 int strncmp_fast(const char* s1, const char* s2);
 
@@ -57,9 +64,16 @@ void HashTableLoad(HashTable* table, size_t count, char** words)
 
     for(size_t i = 0; i < count; i++)
     {
-        size_t hash_value = table->HashFunc(table->size, words[i]);
-        char* buffer = (char*)calloc(MAX_WORD_LENGHT + 1, sizeof(char));
-        strcpy(buffer, words[i]);
+        //size_t hash_value = table->HashFunc(table->size, words[i]);
+
+        #ifdef CRC32_OPT
+        size_t hash_value = Hash_ASM(table->size, words[i]);
+        #else
+        size_t hash_value = HashCRC_32(table->size, words[i]);
+        #endif
+        
+        char* buffer = (char*)calloc(MAX_WORD_LENGHT * 2 + 1, sizeof(char));
+        strcpy(buffer + (32 - (size_t)buffer % 32), words[i]);
         ListAddElem(&table->table[hash_value], buffer);
     }
 }
@@ -69,16 +83,24 @@ size_t HashTableRun(HashTable* table, const char* word)
     assert(table);
     assert(word);
 
-    size_t hash_value = table->HashFunc(table->size, word);
+    //size_t hash_value = table->HashFunc(table->size, word);
+
+    #ifdef CRC32_OPT
+    size_t hash_value = Hash_ASM(table->size, word);
+    #else
+    size_t hash_value = HashCRC_32(table->size, word);
+    #endif
     List* list = &table->table[hash_value];
 
     ListElem* elem = list->start;
     while(elem)
     {
-        //printf("word: %p\n", word);
-        //printf("word in table %p\n", elem->word);
-        if(!strncmp_fast(elem->word, word)) return elem->count;
-        //if(!strncmp(elem->word, word, MAX_WORD_LENGHT)) return elem->count;
+        #ifdef STRCMP_OPT
+        if(!strncmp_fast(elem->word_aligned, word)) return elem->count;
+        #else
+        if(!strncmp(elem->word_aligned, word, MAX_WORD_LENGHT)) return elem->count;
+        #endif
+
         elem = elem->next;
     }
 

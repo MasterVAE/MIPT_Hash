@@ -64,6 +64,7 @@ void ListAddElem(List* list, char* string)
     if(!elem) return;
 
     elem->word = string;
+    elem->word_aligned = string + (32 - (size_t)string % 32);
     elem->next = NULL;
     elem->count = 1;
 

@@ -11,5 +11,4 @@ size_t HashRoll(size_t hash_count, const char* word);
 size_t HashCRC_32(size_t hash_count, const char* word);
 
 
-
 #endif // HASH_FUNCS_H

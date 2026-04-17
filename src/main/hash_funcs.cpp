@@ -3,6 +3,7 @@
 
 #include "hash_funcs.h"
 
+#include "optimizations.h"
 
 size_t HashZero(size_t hash_count, const char* word)
 {
@@ -38,6 +39,7 @@ size_t HashSumm(size_t hash_count, const char* word)
 
     return summ%hash_count;
 }
+
 size_t HashRoll(size_t hash_count, const char* word)
 {
     assert(word);
@@ -63,11 +65,25 @@ size_t HashCRC_32(size_t hash_count, const char* word)
 
     for(size_t i = 0; word[i] != '\0'; i++)
     {
+        #ifdef CRC32_ASM
+
+        asm volatile (
+            "mov rax, %2\n"
+            "xor rbx, rbx\n"
+            "mov bl, %1\n"
+            "xor rax, rbx\n"
+            "rol rax, 1\n"
+            "mov %0, rax"
+            : "=r"(value)      
+            : "r"(word[i]), "r"(value)  
+            : "rax", "rbx"           
+        );
+
+        #else
         value ^= (size_t)word[i];
-        value = (value << 1) | (value & ((size_t)1 << (sizeof(value) * 8 - 1)));
+        value = (value << 1) | (value >> (sizeof(value) * 8 - 1));
+        #endif
     }
 
     return value%hash_count;
 }
-
-// заменить ассемблерной функцией

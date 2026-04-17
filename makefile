@@ -74,6 +74,7 @@ CFLAGS = -std=c++17 -Wall \
                 -pie \
                 -fPIE \
                 -Werror=vla \
+                -masm=intel \
 
 RELEASE_FLAGS = -O2 -march=native -g -D NDEBUG
 

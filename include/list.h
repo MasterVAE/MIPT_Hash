@@ -7,6 +7,7 @@ struct ListElem
 {
     ListElem* next;
     char* word;
+    char* word_aligned;
     size_t count;
 };
 

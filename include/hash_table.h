@@ -21,5 +21,7 @@ void HashTableLoad(HashTable* table, size_t count, char** words);
 void HashTableStat(HashTable* table, const char* filename);
 
 size_t HashTableRun(HashTable* table, const char* word);
+size_t HashTableRun_Middle(HashTable* table, const char* word);
+size_t HashTableRun_Fast(HashTable* table, const char* word);
 
 #endif // HASH_TABLE_H

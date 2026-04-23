@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <x86intrin.h>
 #include <string.h>
 
 #include "list.h"
 #include "hash_table.h"
 #include "hash_funcs.h"
 #include "words.h"
+#include "optimizations.h"
 
 extern "C" size_t Hash_ASM(size_t hash_count, const char* word);
 
@@ -13,7 +15,7 @@ static const char* const INPUT_FILENAME = "sources/file.fl";
 static const char* const STAT_FILENAME = "sources/stats_crc32";
 static size_t (*HASH_FUNC)(size_t hash_count, const char* word) = HashCRC_32;
 
-static const size_t CYCLES = 500;
+static const size_t CYCLES = 1000;
 
 int main()
 {   
@@ -49,15 +51,28 @@ int main()
 
     char* buff = (char*)calloc(MAX_WORD_LENGHT * 2, sizeof(char));
 
+    size_t start_time = __rdtsc();
+
     for(size_t i = 0; i < CYCLES; i++)
     {
         for(size_t j = 0; j < word_count; j++)
         {
             memset(buff, 0, MAX_WORD_LENGHT * 2);
             strcpy(buff + (32 - (size_t)buff % 32), words[j]);
+
+#ifdef RUN_OPT
+            sum += HashTableRun_Fast(table, buff + (32 - (size_t)buff % 32));
+#else
+    #ifdef INT64_OPT
+            sum += HashTableRun_Middle(table, buff + (32 - (size_t)buff % 32));
+    #else
             sum += HashTableRun(table, buff + (32 - (size_t)buff % 32));
+    #endif
+#endif
         }
     }
+    size_t end_time = __rdtsc();
+
 
     free(buff);
 
@@ -68,5 +83,7 @@ int main()
     HashTableDestroy(table);
 
     printf("Hash table ending...\n");
+
+    printf("Time in ticks: %lu\n", (end_time-start_time)/10000000);
     return 0;
 }

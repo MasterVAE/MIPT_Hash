@@ -86,7 +86,7 @@ return 0;
 
 
 <details>
-<summary>V2 - HashTableRun на AVX регистрах</summary>
+<summary>V2 - HashTableRun на AVX инструкциях</summary>
 
 ```c++
 size_t hash_value = HashCRC_32(table->size, word);
